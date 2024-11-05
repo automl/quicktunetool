@@ -74,9 +74,7 @@ class MetricLogger(object):
             return self.meters[attr]
         if attr in self.__dict__:
             return self.__dict__[attr]
-        raise AttributeError(
-            "'{}' object has no attribute '{}'".format(type(self).__name__, attr)
-        )
+        raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, attr))
 
     def __str__(self):
         loss_str = []
@@ -124,9 +122,7 @@ class MetricLogger(object):
             end = time.time()
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-        _print(
-            f"Total time: {total_time_str} ({total_time / len(iterable):.3f} s / it)"
-        )
+        _print(f"Total time: {total_time_str} ({total_time / len(iterable):.3f} s / it)")
 
 
 def get_torch_device():

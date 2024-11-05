@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class RandomOptimizer(Optimizer):
-    """Random search optimizer.
+    """A basic implementation of a random search optimizer.
 
     Args:
         cs (ConfigurationSpace): Configuration space object.
@@ -28,6 +28,7 @@ class RandomOptimizer(Optimizer):
         seed (int, optional): Random seed. Defaults to None.
         verbosity (int, optional): Verbosity level. Defaults to 2.
     """
+
     def __init__(
         self,
         cs: ConfigurationSpace,
@@ -109,7 +110,7 @@ class RandomOptimizer(Optimizer):
         if not status:
             self.failed.add(index)
             return
-        
+
         # update trackers
         self.curves[index, fidelity - 1] = score
         self.fidelities[index] = fidelity

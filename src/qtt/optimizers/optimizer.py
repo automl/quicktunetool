@@ -8,16 +8,16 @@ logger = logging.getLogger(__name__)
 
 
 class Optimizer:
-    """Base class for all optimizers.
+    """Base class. Implements all low-level functionality.
 
     Args:
-        path (str):
-            Directory location to store all outputs.
-            If None, a new unique time-stamped directory is chosen.
         name (str):
             Name of the subdirectory inside path where model will be saved.
             The final model directory will be os.path.join(path, name)
             If None, defaults to the model's class name: self.__class__.__name__
+        path (str):
+            Directory location to store all outputs.
+            If None, a new unique time-stamped directory is chosen.
     """
 
     model_file_name = "model.pkl"
@@ -44,7 +44,7 @@ class Optimizer:
             self.path = setup_outputdir(path)
 
         self._is_initialized = False
-    
+
     def ante(self):
         """This method is intended for the use with a tuner.
         It allows to perform some pre-processing steps before each ask."""
@@ -62,7 +62,7 @@ class Optimizer:
             A config to sample.
         """
         raise NotImplementedError
-    
+
     def tell(self, report: dict | list[dict]):
         """Tell the optimizer the result for an asked trial.
 
@@ -70,7 +70,7 @@ class Optimizer:
             report (dict): The result for a trial
         """
         raise NotImplementedError
-    
+
     @classmethod
     def load(cls, path: str, reset_paths: bool = True, verbose: bool = True):
         """
@@ -89,8 +89,7 @@ class Optimizer:
                 Whether to log the location of the loaded file.
 
         Returns:
-            model (Optimizer):
-                Loaded model object.
+            model (Optimizer): The loaded model object.
         """
         file_path = os.path.join(path, cls.model_file_name)
         with open(file_path, "rb") as f:
@@ -106,18 +105,16 @@ class Optimizer:
         Saves the model to disk.
 
         Args:
-            path (str):
-                Path to the saved model, minus the file name.
-                This should generally be a directory path ending with a '/' character (or appropriate path separator value depending on OS).
-                If None, self.path is used.
-                The final model file is typically saved to os.path.join(path, self.model_file_name).
-            verbose (bool):
-                Whether to log the location of the saved file.
+            path (str): Path to the saved model, minus the file name. This should generally
+                be a directory path ending with a '/' character (or appropriate path separator
+                value depending on OS). If None, self.path is used. The final model file is
+                typically saved to os.path.join(path, self.model_file_name).
+            verbose (bool): Whether to log the location of the saved file.
 
         Returns:
-            path (str):
-                Path to the saved model, minus the file name.
-                Use this value to load the model from disk via cls.load(path), cls being the class of the model object, such as model = RFModel.load(path)
+            str: Path to the saved model, minus the file name. Use this value to load the
+                model from disk via cls.load(path), where cls is the class of the model
+                object (e.g., model = Model.load(path)).
         """
         if path is None:
             path = self.path
@@ -140,7 +137,7 @@ class Optimizer:
 
     def reset_path(self, path: str | None = None):
         """Reset the path of the model.
-        
+
         Args:
             path (str):
                 Directory location to store all outputs.

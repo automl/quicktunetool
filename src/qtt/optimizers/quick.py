@@ -14,9 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 class QuickOptimizer(Optimizer):
-    """QuickOptimizer implements a cost-aware Bayesian optimization approach with an ask
-    and tell interface. It uses a DyHPO predictor for performance and a simple MLP for
-    cost.
+    """QuickOptimizer implements a cost-aware Bayesian optimization. It builds upon the
+    DyHPO algorithm, adding cost-awareness to the optimization process.
 
     Args:
         cs (ConfigurationSpace): The configuration space to optimize over.
@@ -186,9 +185,7 @@ class QuickOptimizer(Optimizer):
         self.pipelines = df
         self.N = len(df)
         self.fidelities: np.ndarray = np.zeros(self.N, dtype=int)
-        self.curves: np.ndarray = np.full(
-            (self.N, self.max_fidelity), np.nan, dtype=float
-        )
+        self.curves: np.ndarray = np.full((self.N, self.max_fidelity), np.nan, dtype=float)
         self.costs = None
         if self.patience is not None:
             self.score_history = np.zeros((self.N, self.patience), dtype=float)
@@ -203,7 +200,7 @@ class QuickOptimizer(Optimizer):
 
     def _predict(self) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
         """Predict the performance and cost of the configurations.
-        
+
         Returns:
             The mean and standard deviation of the performance of the pipelines and their costs.
         """
@@ -226,12 +223,9 @@ class QuickOptimizer(Optimizer):
         """Calculate the acquisition value.
 
         Args:
-            mean: np.ndarray
-                The mean of the predictions.
-            std: np.ndarray
-                The standard deviation of the predictions.
-            y_max: np.ndarray
-                The maximum score per fidelity.
+            mean (np.ndarray): The mean of the predictions.
+            std (np.ndarray): The standard deviation of the predictions.
+            cost (np.ndarray): The cost of the pipeline.
 
         Returns:
             The acquisition values.
@@ -260,18 +254,16 @@ class QuickOptimizer(Optimizer):
         return acq_value
 
     def _optimize_acq_fn(self, mean, std, cost) -> list[int]:
-        """Optimize the acquisition function.
+        """
+        Optimize the acquisition function.
 
         Args:
-            mean: np.ndarray
-                The mean of the predictions.
-            std: np.ndarray
-                The standard deviation of the predictions.
-            cost: np.ndarray
-                The cost of the pipeline.
+            mean (np.ndarray): The mean of the predictions.
+            std (np.ndarray): The standard deviation of the predictions.
+            cost (np.ndarray): The cost of the pipeline.
 
         Returns:
-            A sorted list of indices of the pipeline.
+            list[int]: A sorted list of indices of the pipeline.
         """
         # maximum score per fidelity
         curves = np.nan_to_num(self.curves)
@@ -327,8 +319,7 @@ class QuickOptimizer(Optimizer):
         """Tell the result of a trial to the optimizer.
 
         Args:
-            result: dict | list[dict]
-                The result(s) for a trial.
+            result (dict | list[dict]): The result(s) for a trial.
         """
         if isinstance(result, dict):
             result = [result]
@@ -375,7 +366,7 @@ class QuickOptimizer(Optimizer):
         return False
 
     def ante(self):
-        """Some operations to perform by the tuner before the optimization loop
+        """Some operations to perform by the tuner before the optimization loop.
 
         Here: refit the predictors with observed data.
         """
@@ -392,9 +383,7 @@ class QuickOptimizer(Optimizer):
         self.perf_predictor.fit_extra(pipeline, curve)  # type: ignore
 
     def fit(self, X, curve, cost):
-        """
-        Fit the predictors with the given training data.
-        """
+        """Fit the predictors with the given training data."""
         self.perf_predictor.fit(X, curve)  # type: ignore
         if self.cost_predictor is not None:
             self.cost_predictor.fit(X, cost)
@@ -402,11 +391,10 @@ class QuickOptimizer(Optimizer):
     def reset_path(self, path: str | None = None):
         """
         Reset the path of the model.
-        Parameters
-        ----------
-        path : str, default = None
-            Directory location to store all outputs.
-            If None, a new unique time-stamped directory is chosen.
+
+        Args:
+            path (str, optional): Directory location to store all outputs. If None, a new unique
+                time-stamped directory is chosen.
         """
         super().reset_path(path)
         if self.perf_predictor is not None:

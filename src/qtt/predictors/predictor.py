@@ -11,8 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Predictor:
-    """
-    Base class for all predictors.
+    """Base class. Implements all low-level functionality.
 
     Args:
         path (str, optional): Directory location to store all outputs. Defaults to None.
@@ -91,10 +90,7 @@ class Predictor:
             out = self
         return out
 
-    def _fit(
-        self,
-        **kwargs,
-    ):
+    def _fit(self, **kwargs):
         """
         Fit model to predict values in y based on X.
 
@@ -147,8 +143,7 @@ class Predictor:
                 Whether to log the location of the loaded file.
 
         Returns:
-            model (Predictor):
-                Loaded model object.
+            model (Predictor): Loaded model object.
         """
         file_path = os.path.join(path, cls.model_file_name)
         with open(file_path, "rb") as f:
@@ -182,3 +177,11 @@ class Predictor:
         if verbose:
             logger.info(f"Model saved to: {file_path}")
         return path
+
+    def predict(self, **kwargs):
+        """
+        Predicts the output for the given input data.
+
+        New predictors should override this method with their custom prediction logic.
+        """
+        raise NotImplementedError

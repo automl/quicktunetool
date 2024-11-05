@@ -1,4 +1,4 @@
-from .cv_cls_tuner import QuickCVCLSTuner
-from .quicktuner import QuickTuner
+from .cv_cls import QuickTuner_CVCLS
+from .quick import QuickTuner
 
-__all__ = ["QuickTuner", "QuickCVCLSTuner"]
+__all__ = ["QuickTuner", "QuickTuner_CVCLS"]

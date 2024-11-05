@@ -1,6 +1,26 @@
 [project]
 name = "quicktunetool"
 version = "0.0.1"
+description = "A Framework for Efficient Model Selection and Hyperparameter Optimization"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+keywords = ["Machine Learning", "AutoML", "HPO", "Fine-Tuning", "Meta-Learning"]
+authors = [
+  { name = "Ivo Rapant", email = "rapanti@cs.uni-freiburg.de" }
+]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: Unix",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development :: Build Tools",
+]
+
 dependencies = [
   "torch > 2.0.0",
   "torchvision >= 0.15.1",
@@ -13,32 +33,15 @@ dependencies = [
   "timm >= 0.9.16",
   "tqdm >= 4.66.0",
 ]
-requires-python = ">=3.10"
-authors = [{ name = "Ivo Rapant", email = "rapanti@cs.uni-freiburg.de" }]
-readme = "README.md"
-description = "A Framework for Efficient Model Selection and Hyperparameter Optimization"
-classifiers = [
-  'Intended Audience :: Science/Research',
-  'Intended Audience :: Developers',
-  'License :: OSI Approved :: BSD License',
-  'Programming Language :: Python',
-  'Topic :: Software Development',
-  'Topic :: Scientific/Engineering',
-  'Operating System :: POSIX',
-  'Operating System :: Unix',
-  'Programming Language :: Python :: 3',
-]
-license = { file = "LICENSE" }
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-"*" = ["*.*"]
+[project.urls]
+"Homepage" = "https://github.com/automl/quicktunetool"
+"Bug Reports" = "https://github.com/automl/quicktunetool/issues"
+"Source" = "https://github.com/automl/quicktunetool"
 
 [project.scripts]
 train = "qtt.finetune.cv.classification.train:main_cli"
 validate = "qtt.finetune.cv.classification.validate:main_cli"
 
-[project.urls]
-Homepage = "https://github.com/automl/QTT"
+[tool.setuptools.packages.find]
+where = ["src"]

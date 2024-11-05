@@ -34,6 +34,8 @@ DEFAULT_FIT_PARAMS = {
 
 
 class CostPredictor(Predictor):
+    """A predictor that predicts the cost of training a configuration on a new dataset."""
+
     temp_file_name = "temp_model.pt"
 
     def __init__(
@@ -65,8 +67,7 @@ class CostPredictor(Predictor):
         params = {
             "in_dim": [
                 len(self.types_of_features["continuous"]),
-                len(self.types_of_features["categorical"])
-                + len(self.types_of_features["bool"]),
+                len(self.types_of_features["categorical"]) + len(self.types_of_features["bool"]),
             ],
             "enc_out_dim": 16,
             "enc_nlayers": 3,
@@ -114,9 +115,7 @@ class CostPredictor(Predictor):
         categorical_features = self.types_of_features["categorical"]
         bool_features = self.types_of_features["bool"]
         self.preprocessor = create_preprocessor(
-            continous_features,
-            categorical_features,
-            bool_features,
+            continous_features, categorical_features, bool_features
         )
         out = self.preprocessor.fit_transform(df)
         self._feature_mapping = get_feature_mapping(self.preprocessor)
@@ -126,7 +125,7 @@ class CostPredictor(Predictor):
                 "Number of columns in df array does not match feature_mapping."
             )
 
-        self.label_scaler = preprocessing.StandardScaler()  #MaxAbsScaler()
+        self.label_scaler = preprocessing.StandardScaler()  # MaxAbsScaler()
         out_array = self.label_scaler.fit_transform(array)
 
         return out, out_array
@@ -209,9 +208,7 @@ class CostPredictor(Predictor):
             val_set = None
 
         bs = min(batch_size, int(2 ** (3 + np.floor(np.log10(len(train_set))))))
-        train_loader = DataLoader(
-            train_set, batch_size=bs, shuffle=True, drop_last=True
-        )
+        train_loader = DataLoader(train_set, batch_size=bs, shuffle=True, drop_last=True)
         val_loader = None
         if val_set is not None:
             bs = min(batch_size, int(2 ** (3 + np.floor(np.log10(len(val_set))))))
@@ -280,12 +277,14 @@ class CostPredictor(Predictor):
                     break
 
         if early_stop:
-            self.model.load_state_dict(torch.load(temp_save_file_path))
+            self.model.load_state_dict(torch.load(temp_save_file_path, weights_only=True))
 
     def _fit(
         self,
         X: pd.DataFrame,
         y: np.ndarray,
+        verbosity: int = 2,
+        **kwargs,
     ):
         if self.is_fit:
             raise AssertionError("Predictor is already fit! Create a new one.")
@@ -356,9 +355,7 @@ class CostPredictor(Predictor):
         model : cls
             Loaded model object.
         """
-        model: CostPredictor = super().load(
-            path=path, reset_paths=reset_paths, verbose=verbose
-        )
+        model: CostPredictor = super().load(path=path, reset_paths=reset_paths, verbose=verbose)
         return model
 
 
@@ -394,7 +391,6 @@ class SimpleMLPRegressor(torch.nn.Module):
             start = end
         x = torch.cat(x, dim=1)
         x = self.head(x)
-        # x = torch.nn.functional.relu(x)
         return x
 
     def predict(self, X) -> torch.Tensor:

@@ -59,9 +59,7 @@ class PerfPredictor(Predictor):
     ) -> None:
         super().__init__(path=path)
         self.fit_params = self._validate_fit_params(fit_params, DEFAULT_FIT_PARAMS)
-        self.refit_params = self._validate_fit_params(
-            refit_params, DEFAULT_REFIT_PARAMS
-        )
+        self.refit_params = self._validate_fit_params(refit_params, DEFAULT_REFIT_PARAMS)
         self.seed = seed
         self.verbosity = verbosity
 
@@ -210,11 +208,16 @@ class PerfPredictor(Predictor):
         return X
 
     def _get_model(self):
+        """
+        Return a new instance of the model.
+
+        Returns:
+            SurrogateModel: A new instance of the model.
+        """
         params = {
             "in_dim": [
                 len(self.types_of_features["continuous"]),
-                len(self.types_of_features["categorical"])
-                + len(self.types_of_features["bool"]),
+                len(self.types_of_features["categorical"]) + len(self.types_of_features["bool"]),
             ],
             "in_curve_dim": self._curve_dim,
         }
@@ -231,18 +234,18 @@ class PerfPredictor(Predictor):
         validation_fraction: float,
         tol: float,
     ):
-        """
-        Train the model on the given dataset.
+        """Train the model on the given dataset.
 
         Args:
-            dataset: dataset to train on
-            learning_rate_init: initial learning rate
-            batch_size: batch size to use
-            max_iter: maximum number of iterations to train for
-            early_stop: if True, stop training when validation loss stops improving
-            patience: number of iterations to wait before stopping training
-            validation_fraction: fraction of dataset to use for validation
-            tol: tolerance for determining when to stop training
+            dataset: Dataset to train on.
+            learning_rate_init (float): Initial learning rate.
+            batch_size (int): Batch size to use.
+            max_iter (int): Maximum number of iterations to train for.
+            early_stop (bool): If True, stop training when validation loss stops improving.
+            patience (int or None): Number of iterations to wait before stopping training
+                if validation loss does not improve.
+            validation_fraction (float): Fraction of the dataset to use for validation.
+            tol (float): Tolerance for determining when to stop training.
         """
         if self.seed is not None:
             random.seed(self.seed)
@@ -356,7 +359,7 @@ class PerfPredictor(Predictor):
                     logger.log(
                         15,
                         "Stopping training..."
-                        f"No improvement in the last {patience} iterations. "
+                        f"No improvement in the last {patience} iterations. ",
                     )
                     break
 
@@ -364,8 +367,8 @@ class PerfPredictor(Predictor):
             logger.info(
                 f"Loading best model from iteration {best_iter} with val score {best_val_metric}"
             )
-            self.model.load_state_dict(torch.load(temp_save_file_path))
-        
+            self.model.load_state_dict(torch.load(temp_save_file_path, weights_only=True))
+
         if os.path.exists(cache_dir):
             shutil.rmtree(cache_dir)
 
@@ -382,6 +385,7 @@ class PerfPredictor(Predictor):
         self,
         X: pd.DataFrame,
         y: np.ndarray,
+        verbosity: int = 2,
         **kwargs,
     ):
         if self.is_fit:
@@ -475,9 +479,7 @@ class PerfPredictor(Predictor):
 
         if patience is not None:
             if early_stop:
-                logger.info(
-                    f"Early stopping on validation loss with patience {patience} "
-                )
+                logger.info(f"Early stopping on validation loss with patience {patience} ")
             else:
                 logger.info(f"Early stopping on training loss with patience {patience}")
 
@@ -613,6 +615,10 @@ class PerfPredictor(Predictor):
         self.model.set_train_data(a, b, c)
 
     def predict(self, X: pd.DataFrame, curve: np.ndarray, fill_missing=True):
+        """
+        Predict the performance of a configuration `X` on a new dataset `curve`.
+        """
+
         if not self.is_fit:
             raise AssertionError("Model is not fitted yet")
 
@@ -668,9 +674,7 @@ class PerfPredictor(Predictor):
         Returns:
             cls: The loaded model object.
         """
-        model: PerfPredictor = super().load(
-            path=path, reset_paths=reset_paths, verbose=verbose
-        )
+        model: PerfPredictor = super().load(path=path, reset_paths=reset_paths, verbose=verbose)
 
         verbosity = model.verbosity
         set_logger_verbosity(verbosity, logger)

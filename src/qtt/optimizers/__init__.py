@@ -6,5 +6,4 @@ __all__ = [
     "Optimizer",
     "QuickOptimizer",
     "RandomOptimizer",
-    "get_pretrained_optimizer",
 ]

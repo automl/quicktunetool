@@ -3,12 +3,8 @@ from pathlib import Path
 
 from torchvision.datasets import ImageFolder
 
-from .finetune_wrapper import finetune_script
 
-__all__ = ["finetune_script"]
-
-
-def extract_task_info_metafeat(
+def extract_image_dataset_metafeat(
     root: str | Path, train_split: str = "train", val_split: str = "val"
 ):
     root = Path(root)
@@ -48,34 +44,3 @@ def extract_task_info_metafeat(
     }
 
     return task_info, metafeat
-
-
-def load_best_model(path: str):
-    import yaml
-    from timm.models import create_model, load_checkpoint
-
-    from qtt.finetune.cv.classification.utils import (
-        export_model_after_finetuning,
-        prepare_model_for_finetuning,
-    )
-
-    args = yaml.safe_load(open(os.path.join(path, "args.yaml"), "r"))
-
-    model = create_model(
-        args["model"],
-        num_classes=args["num_classes"],
-    )
-
-    feat_flag = args["bss_reg"] or args["delta_reg"] or args["cotuning_reg"]
-    source_flag = args["delta_reg"] or args["cotuning_reg"]
-    model, _ = prepare_model_for_finetuning(
-        model,
-        args["num_classes"],
-        return_features=feat_flag,
-        return_source_output=source_flag,
-    )
-
-    load_checkpoint(model, os.path.join(path, "model_best.pth.tar"))
-    model = export_model_after_finetuning(model)
-
-    return model

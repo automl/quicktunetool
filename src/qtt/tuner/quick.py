@@ -183,16 +183,16 @@ class QuickTuner:
 
     def run(
         self,
-        task_info: dict | None = None,
         fevals: int | None = None,
         time_budget: float | None = None,
+        trial_info: dict | None = None,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Run the tuner.
 
         Args:
-            task_info (dict, optional): Additional information to pass to the objective function. Defaults to None.
             fevals (int, optional): Number of function evaluations to run. Defaults to None.
             time_budget (float, optional): Time budget in seconds. Defaults to None.
+            task_info (dict, optional): Additional information to pass to the objective function. Defaults to None.
 
         Returns:
             Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -211,10 +211,10 @@ class QuickTuner:
             trial = self.optimizer.ask()
             if trial is None:
                 break
-            _task_info = self._add_task_info(task_info)
+            _trial_info = self._add_trial_info(trial_info)
 
             self._log_job_submission(trial)
-            result = self.f(trial, task_info=_task_info)
+            result = self.f(trial, trial_info=_trial_info)
 
             self._log_report(result)
             self.optimizer.tell(result)
@@ -290,7 +290,7 @@ class QuickTuner:
             else:
                 logger.warning(f"Unknown argument: {key}")
 
-    def _add_task_info(self, task_info: dict | None) -> dict:
+    def _add_trial_info(self, task_info: dict | None) -> dict:
         out = {} if task_info is None else task_info.copy()
         out["output-path"] = self.output_path
         out["remaining-fevals"] = self._remaining_fevals

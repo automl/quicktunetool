@@ -1,6 +1,6 @@
 # Code References
 
-This section provides references for the core code components of Quick-Tune-Tool, detailing the primary modules and classes that make up the tool's architecture. The code is organized into three main parts: **Optimizers**, **Predictors**, and **Tuners**.
+This section provides references for the core components of Quick-Tune-Tool, describing the primary modules and classes that make up the tool's architecture. The code is organized into three main parts: **Optimizers**, **Predictors**, and **Tuners**.
 
 ---
 
@@ -40,16 +40,16 @@ The Tuners module coordinates the tuning process, managing environment setup, ex
     - File: `tuners/quick.py`
     - Serves as the central class that manages the tuning process, integrating optimizers and predictors to manage iterative evaluations and updates.
 
-- **CV-Classification**  
-    - File: `tuners/cv_cls.py`
-    - A specialized tuner for image classification tasks, offering a reduced interface where users simply provide the path to the image dataset.
+- **Image-Classification**  
+    - File: `tuners/image/classification/tuner.py`
+    - A specialized tuner for image classification, offering a reduced interface where users simply provide the path to the image dataset.
 
 ---
 
 ## Additional Resources
 
-- **Objective Functions**  
-    - Directory: `objective/`
+- **Finetuning Scripts**  
+    - Directory: `scripts/`
     - Functions used to evaluate configurations, returning performance metrics for each step.
   
 - **Utility Scripts**  

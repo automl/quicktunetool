@@ -1,14 +1,14 @@
 import numpy as np
 
-from ..objectives.image.classification import extract_image_dataset_metafeat
-from ..objectives.image.classification import fn
-from ..optimizers.quick import QuickOptimizer
-from ..utils.pretrained import get_pretrained_optimizer
-from .quick import QuickTuner
+from ....finetune.image.classification import extract_image_dataset_metafeat
+from ....finetune.image.classification import fn
+from ....optimizers.quick import QuickOptimizer
+from ....utils.pretrained import get_pretrained_optimizer
+from ...quick import QuickTuner
 
 
-class QuickTuner_ImageCLS(QuickTuner):
-    """QuickTuner for image classification tasks.
+class QuickImageCLSTuner(QuickTuner):
+    """QuickTuner for image classification.
 
     Args:
         data_path (str): Path to the dataset.

@@ -59,7 +59,7 @@ class QuickTuner:
         self.verbosity = verbosity
         set_logger_verbosity(verbosity, logger)
 
-        self.output_path = setup_outputdir(path, path_suffix=self.path_suffix)
+        self.output_dir = setup_outputdir(path, path_suffix=self.path_suffix)
         self._setup_log_to_file(self.log_to_file, self.log_file_path)
 
         if save_freq not in ["step", "incumbent"] and save_freq is not None:
@@ -67,7 +67,7 @@ class QuickTuner:
         self.save_freq = save_freq
 
         self.optimizer = optimizer
-        self.optimizer.reset_path(self.output_path)
+        self.optimizer.reset_path(self.output_dir)
         self.f = f
 
         # trackers
@@ -85,13 +85,13 @@ class QuickTuner:
         self._remaining_time = None
 
         if resume:
-            self.load(os.path.join(self.output_path, "qt.json"))
+            self.load(os.path.join(self.output_dir, "qt.json"))
 
     def _setup_log_to_file(self, log_to_file: bool, log_file_path: str) -> None:
         if not log_to_file:
             return
         if log_file_path == "auto":
-            log_file_path = os.path.join(self.output_path, "logs", self.log_file_name)
+            log_file_path = os.path.join(self.output_dir, "logs", self.log_file_name)
         log_file_path = os.path.abspath(os.path.normpath(log_file_path))
         os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
         add_log_to_file(log_file_path, logger)
@@ -119,7 +119,7 @@ class QuickTuner:
             out["score"] = self.inc_score
             out["cost"] = self.inc_cost
             out["info"] = self.inc_info
-            with open(os.path.join(self.output_path, "incumbent.json"), "w") as f:
+            with open(os.path.join(self.output_dir, "incumbent.json"), "w") as f:
                 json.dump(out, f, indent=2)
         except Exception as e:
             logger.error(f"Failed to save incumbent: {e}")
@@ -128,7 +128,7 @@ class QuickTuner:
         if not self.history or not save:
             return
         try:
-            history_path = os.path.join(self.output_path, "history.csv")
+            history_path = os.path.join(self.output_dir, "history.csv")
             history_df = pd.DataFrame(self.history)
             history_df.to_csv(history_path)
         except Exception as e:
@@ -136,7 +136,7 @@ class QuickTuner:
 
     def _log_job_submission(self, trial_info: dict):
         fidelity = trial_info["fidelity"]
-        config_id = trial_info["config_id"]
+        config_id = trial_info["config-id"]
         logger.info(
             f"INCUMBENT: {self.inc_id}  "
             f"SCORE: {self.inc_score}  "
@@ -157,13 +157,13 @@ class QuickTuner:
         state = self._get_state()
         # Write state to disk
         try:
-            state_path = os.path.join(self.output_path, "qt.json")
+            state_path = os.path.join(self.output_dir, "qt.json")
             with open(state_path, "wb") as f:
                 pickle.dump(state, f, protocol=pickle.HIGHEST_PROTOCOL)
         except Exception as e:
             logger.warning(f"State not saved: {e!r}")
         try:
-            opt_path = os.path.join(self.output_path, "optimizer")
+            opt_path = os.path.join(self.output_dir, "optimizer")
             self.optimizer.save(opt_path)
         except Exception as e:
             logger.warning(f"Optimizer state not saved: {e!r}")
@@ -179,7 +179,7 @@ class QuickTuner:
         with open(path, "rb") as f:
             state = pickle.load(f)
         self.__dict__.update(state)
-        self.optimizer = Optimizer.load(os.path.join(self.output_path, "optimizer"))
+        self.optimizer = Optimizer.load(os.path.join(self.output_dir, "optimizer"))
 
     def run(
         self,
@@ -192,7 +192,7 @@ class QuickTuner:
         Args:
             fevals (int, optional): Number of function evaluations to run. Defaults to None.
             time_budget (float, optional): Time budget in seconds. Defaults to None.
-            task_info (dict, optional): Additional information to pass to the objective function. Defaults to None.
+            trial_info (dict, optional): Additional information to pass to the objective function. Defaults to None.
 
         Returns:
             Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -201,7 +201,7 @@ class QuickTuner:
                 - history (np.ndarray): History of all evaluations.
         """
         logger.info("Starting QuickTuner Run...")
-        logger.info(f"QuickTuneTool will save results to {self.output_path}")
+        logger.info(f"QuickTuneTool will save results to {self.output_dir}")
 
         self.start = time.time()
         while True:
@@ -244,7 +244,7 @@ class QuickTuner:
 
         inc_changed = False
         for report in reports:
-            config_id = report["config_id"]
+            config_id = report["config-id"]
             score = report["score"]
             cost = report["cost"]
             fidelity = report["fidelity"]
@@ -292,7 +292,7 @@ class QuickTuner:
 
     def _add_trial_info(self, task_info: dict | None) -> dict:
         out = {} if task_info is None else task_info.copy()
-        out["output-path"] = self.output_path
+        out["output-dir"] = self.output_dir
         out["remaining-fevals"] = self._remaining_fevals
         out["remaining-time"] = self._remaining_time
         return out

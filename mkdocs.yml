@@ -127,9 +127,9 @@ nav:
       - reference/predictors/predictor.md
       - PerfPredictor: reference/predictors/perf.md
       - CostPredictor: reference/predictors/cost.md
-    - Tuner:
-      - reference/tuner/index.md
-      - CV-Classification-Tuner: reference/tuner/cv_cls_tuner.md
-      - reference/tuner/quicktuner.md
+    - Tuners:
+      - reference/tuners/index.md
+      - Image-Classification-Tuner: reference/tuners/image_cls_tuner.md
+      - reference/tuners/quicktuner.md
   # Auto generated with docs/examples_runner.py
   - Examples: "examples/"

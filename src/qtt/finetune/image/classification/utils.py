@@ -37,7 +37,7 @@ def extract_image_dataset_metafeat(
     }
 
     task_info = {
-        "data-path": str(root),
+        "data-dir": str(root),
         "train-split": train_split,
         "val-split": val_split,
         "num-classes": num_classes,

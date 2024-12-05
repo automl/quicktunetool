@@ -310,7 +310,7 @@ class QuickOptimizer(Optimizer):
             fidelity = self.fidelities[index] + 1
 
         return {
-            "config_id": index,
+            "config-id": index,
             "config": self.configs[index],
             "fidelity": fidelity,
         }
@@ -329,7 +329,7 @@ class QuickOptimizer(Optimizer):
     def _tell(self, result: dict):
         self.tell_count += 1
 
-        index = result["config_id"]
+        index = result["config-id"]
         fidelity = result["fidelity"]
         # cost = result["cost"]
         score = result["score"]

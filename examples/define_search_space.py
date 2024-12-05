@@ -93,9 +93,7 @@ clip = OrdinalHyperparameter("clip_grad", [0, 1, 10])
 """
 amp = OrdinalHyperparameter("amp", [False, True])
 opt = Categorical("opt", ["sgd", "momentum", "adam", "adamw", "adamp"])
-betas = Categorical(
-    "opt_betas", ["(0.9, 0.999)", "(0.0, 0.99)", "(0.9, 0.99)", "(0.0, 0.999)"]
-)
+betas = Categorical("opt_betas", ["(0.9, 0.999)", "(0.0, 0.99)", "(0.9, 0.99)", "(0.0, 0.999)"])
 lr = OrdinalHyperparameter("lr", [1e-05, 5e-05, 0.0001, 0.0005, 0.001, 0.005, 0.01])
 w_ep = OrdinalHyperparameter("warmup_epochs", [0, 5, 10])
 w_lr = OrdinalHyperparameter("warmup_lr", [0.0, 1e-05, 1e-06])

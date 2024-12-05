@@ -1,3 +1,0 @@
-# QuickTuner
-
-::: qtt.tuner.quick

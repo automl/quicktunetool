@@ -39,4 +39,4 @@ tuner = QuickTuner(
     optimizer=optimizer,
     f=finetune_script,
 )
-tuner.run(task_info=task_info, fevals=100, time_budget=3600)
+tuner.run(trial_info=task_info, fevals=100, time_budget=3600)

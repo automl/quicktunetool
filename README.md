@@ -1,92 +1,87 @@
-# Quick-Tune-Tool: A Framework for Efficient Model Selection and Hyperparameter Optimization
+# Quick-Tune-Tool
 
 [![image](https://img.shields.io/pypi/l/quicktunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
 [![image](https://img.shields.io/pypi/pyversions/quikctunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-Quick-Tune-Tool is a streamlined framework designed to tackle model selection and hyperparameter tuning for pretrained models on new datasets. Built on a Combined Algorithm Selection and Hyperparameter Optimization (CASH) approach within a Bayesian optimization framework, it aims to identify the best-performing model and hyperparameter configuration quickly and efficiently.
+**A Practical Tool and User Guide for Automatically Finetuning Pretrained Models**
 
-### Table of Contents
-- [Key Features](#key-features)
-- [Getting Started](#getting-started)
-- [Usage](#usage)
-- [References](#references)
-- [Citations](#citations)
+> Quick-Tune-Tool is an automated solution for selecting and finetuning pretrained models across various machine learning domains. Built upon the Quick-Tune algorithm, this tool bridges the gap between research-code and practical applications, making model finetuning accessible and efficient for practitioners.
 
-## Key Features
-Quick-Tune-Tool leverages three main techniques to optimize model performance effectively:
-1. **Gray-Box Hyperparameter Optimization (HPO)**: Instead of fully training every model, QuickTuneTool only trains each for a few initial epochs and focuses on the most promising models, significantly reducing computation time.
-2. **Meta-Learning**: By using prior evaluations on related tasks, the tool accelerates the search process and refines model recommendations.
-3. **Cost-Awareness**: QuickTuneTool balances time and performance, maintaining an efficient search for the best configurations.
 
-***Note: Currently, only Image Classification is supported.***
-
-## Getting Started
-
-### Installation
-
-To install QuickTuneTool (`QTT`), you can simply use `pip`:
-
+## Installation
 ```bash
 pip install quicktunetool
-```
-
-#### Install from Source
-To install QuickTuneTool directly from the source:
-
-```bash
+# or
 git clone https://github.com/automl/quicktunetool
-pip install -e quicktunetool    # Use -e for editable mode
+pip install -e quicktunetool  # Use -e for editable mode
 ```
+
 
 ## Usage
-QuickTuneTool's interface makes it easy to get started. Here's a simple script to run QuickTuneTool on your dataset:
+
+A simple example for using Quick-Tune-Tool with a pretrained optimizer for image classification:
 
 ```python
-from ConfigSpace import ConfigurationSpace
-from qtt import QuickTuner, QuickOptimizer
+from qtt import QuickTuner, get_pretrained_optimizer
+from qtt.finetune.image.classification import fn
 
-cs = ConfigurationSpace({
-    "cat": [False, True],  # Categorical
-    "float": (0.1, 1.0),   # Uniform Float
-    "int": (1, 10),        # Uniform Int
-    "constant": Constant("constant": (42)),
-})
+# Load task information and meta-features
+task_info, metafeat = extract_task_info_metafeat("path/to/dataset")
 
-def fn(trial: dict, task_info: dict):
-    config = trial["config"]
-    fidelity = trial["fidelity"]
-    ...
-    # Training logic and checkpoint loading here
-    score = ...  # float: 0 - 1
-    cost = ...
+# Initialize the optimizer
+optimizer = get_pretrained_optimizer("mtlbm/micro")
+optimizer.setup(128, metafeat)
 
-    report = trial.copy()
-    report["score"] = score
-    report["cost"] = cost
-    return report
-
-opt = QuickOptimizer(cs, max_fidelity=100, cost_aware=True, ...)
-tuner = QuickTuner(opt, fn)
-tuner.run(fevals=100, time_budget=3600)
+# Create QuickTuner instance and run
+qt = QuickTuner(optimizer, fn)
+qt.run(task_info, time_budget=3600)
 ```
 
-For more code examples, explore the [examples](examples) folder.
+This code snippet demonstrates how to run QTT on an image dataset in just a few lines of code.
 
-### Usage Examples
-For further customization options and advanced usage, please refer to our [documentation](docs).
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -m 'Add your feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a pull request
+
+For any questions or suggestions, please contact the maintainers.
+
+## Project Status
+
+- ✅ Active development
+
+## Support
+
+- 📝 [Documentation](https://automl.github.io/quicktunetool/)
+- 🐛 [Issue Tracker](https://github.com/automl/quicktunetool/issues)
+- 💬 [Discussions](https://github.com/automl/quicktunetool/discussions)
+
+## License
+
+This project is licensed under the BSD License - see the LICENSE file for details.
 
 ## References
 
 The concepts and methodologies of QuickTuneTool are detailed in the following workshop paper:
 
-- **Title**: *Quick-Tune-Tool: A Practical Tool and its User Guide for Automatically Fine-Tuning Pretrained Models*  
-- **Authors**: Ivo Rapant, Lennart Purucker, Fabio Ferreira, Sebastian Pineda Arango, Arlind Kadra, Josif Grabocka, Frank Hutter  
-- **Event**: AutoML 2024 Workshop  
-- **Availability**: The full paper is accessible on [OpenReview](https://openreview.net/forum?id=d0Hapti3Uc), where research details and methodology discussions can be found.
+```
+@inproceedings{
+rapant2024quicktunetool,
+title={Quick-Tune-Tool: A Practical Tool and its User Guide for Automatically Finetuning Pretrained Models},
+author={Ivo Rapant and Lennart Purucker and Fabio Ferreira and Sebastian Pineda Arango and Arlind Kadra and Josif Grabocka and Frank Hutter},
+booktitle={AutoML Conference 2024 (Workshop Track)},
+year={2024},
+url={https://openreview.net/forum?id=d0Hapti3Uc}
+}
+```
 
-### Citation
 If you use QuickTuneTool in your research, please also cite the following paper:
 
 ```
@@ -99,3 +94,7 @@ year={2024},
 url={https://openreview.net/forum?id=tqh1zdXIra}
 }
 ```
+
+---
+
+Made with ❤️ by https://github.com/automl

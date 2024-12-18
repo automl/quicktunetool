@@ -104,7 +104,7 @@ class MLP(nn.Module):
         super().__init__()
         nlayers = max(nlayers, 1)
         if nlayers == 1:
-            self.mlp = nn.Linear(in_dim, bottleneck_dim)
+            self.mlp: nn.Module = nn.Linear(in_dim, bottleneck_dim)
         else:
             layers = [nn.Linear(in_dim, hidden_dim), act_fn()]
             for _ in range(nlayers - 2):

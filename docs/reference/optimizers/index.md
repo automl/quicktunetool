@@ -20,5 +20,5 @@ This class is intended to be extended for specific optimization strategies, with
 
 ### Available Optimizers
 
-- [**`RandomOptimizer`**][qtt.optimizers.random]
+- [**`RandomOptimizer`**][qtt.optimizers.rndm]
 - [**`QuickOptimizer`**][qtt.optimizers.quick]

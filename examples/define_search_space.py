@@ -3,7 +3,7 @@
 This examples shows how to define a search space. We use
 [ConfigSpace](https://github.com/automl/ConfigSpace).
 
-This search space is defined for a computer vision classification task and includes
+This search space is defined for a iamge classification task and includes
 various hyperparameters that can be optimized.
 
 First import the necessary modules:
@@ -17,7 +17,7 @@ from ConfigSpace import (
     OrdinalHyperparameter,
 )
 
-cs = ConfigurationSpace("cv-classification")
+cs = ConfigurationSpace("image-classification")
 
 """
 ## Finetuning Parameters
@@ -25,45 +25,45 @@ The finetuning parameters in this configuration space are designed to control ho
 pre-trained model is fine-tuned on a new dataset. Here's a breakdown of each finetuning
 parameter:
 
-1. **`pct_to_freeze`** (Percentage of Model to Freeze):
+1. **`pct-to-freeze`** (Percentage of Model to Freeze):
 This parameter controls the fraction of the model's layers that will be frozen during
 training. Freezing a layer means that its weights will not be updated. Where `0.0`
 means no layers are frozen, and `1.0` means all layers are frozen, except for the
 final classification layer.
 
-2. **`layer_decay`** (Layer-wise Learning Rate Decay):
+2. **`layer-decay`** (Layer-wise Learning Rate Decay):
 Layer-wise decay is a technique where deeper layers of the model use lower learning
 rates than layers closer to the output.
 
-3. **`linear_probing`**:
+3. **`linear-probing`**:
 When linear probing is enabled, it means the training is focused on updating only the
 final classification layer (linear layer), while keeping the rest of the model frozen.
 
-4. **`stoch_norm`** ([Stochastic Normalization](https://proceedings.neurips.cc//paper_files/paper/2020/hash/bc573864331a9e42e4511de6f678aa83-Abstract.html)):
+4. **`stoch-norm`** ([Stochastic Normalization](https://proceedings.neurips.cc//paper_files/paper/2020/hash/bc573864331a9e42e4511de6f678aa83-Abstract.html)):
 Enabling stochastic normalization during training.
 
-5. **`sp_reg`** ([Starting Point Regularization](https://arxiv.org/abs/1802.01483)):
+5. **`sp-reg`** ([Starting Point Regularization](https://arxiv.org/abs/1802.01483)):
 This parameter controls the amount of regularization applied to the weights of the model
 towards the pretrained model.
 
-6. **`delta_reg`** ([DELTA Regularization](https://arxiv.org/abs/1901.09229)):
+6. **`delta-reg`** ([DELTA Regularization](https://arxiv.org/abs/1901.09229)):
 DELTA regularization aims to preserve the outer layer outputs of the target network.
 
-7. **`bss_reg`** ([Batch Spectral Shrinkage Regularization](https://proceedings.neurips.cc/paper_files/paper/2019/hash/c6bff625bdb0393992c9d4db0c6bbe45-Abstract.html)):
+7. **`bss-reg`** ([Batch Spectral Shrinkage Regularization](https://proceedings.neurips.cc/paper_files/paper/2019/hash/c6bff625bdb0393992c9d4db0c6bbe45-Abstract.html)):
 Batch Spectral Shrinkage (BSS) regularization penalizes the spectral norm of the model's weight matrices.
    
-8. **`cotuning_reg`** ([Co-tuning Regularization](https://proceedings.neurips.cc/paper/2020/hash/c8067ad1937f728f51288b3eb986afaa-Abstract.html)):
+8. **`cotuning-reg`** ([Co-tuning Regularization](https://proceedings.neurips.cc/paper/2020/hash/c8067ad1937f728f51288b3eb986afaa-Abstract.html)):
 This parameter controls the strength of co-tuning, a method that aligns the
 representation of new data with the pre-trained model's representations
 """
-freeze = OrdinalHyperparameter("pct_to_freeze", [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
-ld = OrdinalHyperparameter("layer_decay", [0.0, 0.65, 0.75])
-lp = OrdinalHyperparameter("linear_probing", [False, True])
-sn = OrdinalHyperparameter("stoch_norm", [False, True])
-sr = OrdinalHyperparameter("sp_reg", [0.0, 0.0001, 0.001, 0.01, 0.1])
-d_reg = OrdinalHyperparameter("delta_reg", [0.0, 0.0001, 0.001, 0.01, 0.1])
-bss = OrdinalHyperparameter("bss_reg", [0.0, 0.0001, 0.001, 0.01, 0.1])
-cot = OrdinalHyperparameter("cotuning_reg", [0.0, 0.5, 1.0, 2.0, 4.0])
+freeze = OrdinalHyperparameter("pct-to-freeze", [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+ld = OrdinalHyperparameter("layer-decay", [0.0, 0.65, 0.75])
+lp = OrdinalHyperparameter("linear-probing", [False, True])
+sn = OrdinalHyperparameter("stoch-norm", [False, True])
+sr = OrdinalHyperparameter("sp-reg", [0.0, 0.0001, 0.001, 0.01, 0.1])
+d_reg = OrdinalHyperparameter("delta-reg", [0.0, 0.0001, 0.001, 0.01, 0.1])
+bss = OrdinalHyperparameter("bss-reg", [0.0, 0.0001, 0.001, 0.01, 0.1])
+cot = OrdinalHyperparameter("cotuning-reg", [0.0, 0.5, 1.0, 2.0, 4.0])
 
 """
 ## Regularization Parameters
@@ -82,35 +82,35 @@ cot = OrdinalHyperparameter("cotuning_reg", [0.0, 0.5, 1.0, 2.0, 4.0])
 
 """
 mix = OrdinalHyperparameter("mixup", [0.0, 0.2, 0.4, 1.0, 2.0, 4.0, 8.0])
-mix_p = OrdinalHyperparameter("mixup_prob", [0.0, 0.25, 0.5, 0.75, 1.0])
+mix_p = OrdinalHyperparameter("mixup-prob", [0.0, 0.25, 0.5, 0.75, 1.0])
 cut = OrdinalHyperparameter("cutmix", [0.0, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0])
 drop = OrdinalHyperparameter("drop", [0.0, 0.1, 0.2, 0.3, 0.4])
 smooth = OrdinalHyperparameter("smoothing", [0.0, 0.05, 0.1])
-clip = OrdinalHyperparameter("clip_grad", [0, 1, 10])
+clip = OrdinalHyperparameter("clip-grad", [0, 1, 10])
 
 """
 ## Optimization Parameters
 """
 amp = OrdinalHyperparameter("amp", [False, True])
 opt = Categorical("opt", ["sgd", "momentum", "adam", "adamw", "adamp"])
-betas = Categorical("opt_betas", ["(0.9, 0.999)", "(0.0, 0.99)", "(0.9, 0.99)", "(0.0, 0.999)"])
+betas = Categorical("opt-betas", ["0.9 0.999", "0.0 0.99", "0.9 0.99", "0.0 0.999"])
 lr = OrdinalHyperparameter("lr", [1e-05, 5e-05, 0.0001, 0.0005, 0.001, 0.005, 0.01])
 w_ep = OrdinalHyperparameter("warmup_epochs", [0, 5, 10])
-w_lr = OrdinalHyperparameter("warmup_lr", [0.0, 1e-05, 1e-06])
-wd = OrdinalHyperparameter("weight_decay", [0, 1e-05, 0.0001, 0.001, 0.01, 0.1])
-bs = OrdinalHyperparameter("batch_size", [2, 4, 8, 16, 32, 64, 128, 256, 512])
+w_lr = OrdinalHyperparameter("warmup-lr", [0.0, 1e-05, 1e-06])
+wd = OrdinalHyperparameter("weight-decay", [0, 1e-05, 0.0001, 0.001, 0.01, 0.1])
+bs = OrdinalHyperparameter("batch-size", [2, 4, 8, 16, 32, 64, 128, 256, 512])
 mom = OrdinalHyperparameter("momentum", [0.0, 0.8, 0.9, 0.95, 0.99])
 sched = Categorical("sched", ["cosine", "step", "multistep", "plateau"])
-pe = OrdinalHyperparameter("patience_epochs", [2, 5, 10])
-dr = OrdinalHyperparameter("decay_rate", [0.1, 0.5])
-de = OrdinalHyperparameter("decay_epochs", [10, 20])
+pe = OrdinalHyperparameter("patience-epochs", [2, 5, 10])
+dr = OrdinalHyperparameter("decay-rate", [0.1, 0.5])
+de = OrdinalHyperparameter("decay-epochs", [10, 20])
 da = Categorical(
-    "data_augmentation",
-    ["auto_augment", "random_augment", "trivial_augment", "none"],
+    "data-augmentation",
+    ["auto-augment", "random-augment", "trivial-augment", "none"],
 )
-aa = Categorical("auto_augment", ["v0", "original"])
-ra_nops = OrdinalHyperparameter("ra_num_ops", [2, 3])
-ra_mag = OrdinalHyperparameter("ra_magnitude", [9, 17])
+aa = Categorical("auto-augment", ["v0", "original"])
+ra_nops = OrdinalHyperparameter("ra-num-ops", [2, 3])
+ra_mag = OrdinalHyperparameter("ra-magnitude", [9, 17])
 cond_1 = EqualsCondition(pe, sched, "plateau")
 cond_2 = OrConjunction(
     EqualsCondition(dr, sched, "step"),
@@ -126,9 +126,9 @@ cond_5 = OrConjunction(
     EqualsCondition(betas, opt, "adamw"),
     EqualsCondition(betas, opt, "adamp"),
 )
-cond_6 = EqualsCondition(ra_nops, da, "random_augment")
-cond_7 = EqualsCondition(ra_mag, da, "random_augment")
-cond_8 = EqualsCondition(aa, da, "auto_augment")
+cond_6 = EqualsCondition(ra_nops, da, "random-augment")
+cond_7 = EqualsCondition(ra_mag, da, "random-augment")
+cond_8 = EqualsCondition(aa, da, "auto-augment")
 cs.add(
     mix,
     mix_p,
@@ -222,3 +222,5 @@ model = Categorical(
     ],
 )
 cs.add(model)
+
+cs.to_yaml("space.yaml")

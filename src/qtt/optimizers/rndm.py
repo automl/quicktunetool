@@ -61,17 +61,17 @@ class RandomOptimizer(Optimizer):
 
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         # trackers
         self.iteration = 0
         self.ask_count = 0
         self.tell_count = 0
         self.init_count = 0
         self.eval_count = 0
-        self.evaled = set()
-        self.stoped = set()
-        self.failed = set()
-        self.history = []
+        self.evaled: set[int] = set()
+        self.stoped: set[int] = set()
+        self.failed: set[int] = set()
+        self.history: list = []
 
         self.fidelities: np.ndarray = np.zeros(self.N, dtype=int)
         self.curves: np.ndarray = np.zeros((self.N, self.max_fidelity), dtype=float)
@@ -80,8 +80,10 @@ class RandomOptimizer(Optimizer):
         if self.patience is not None:
             self._score_history = np.zeros((self.N, self.patience), dtype=float)
 
-    def ask(self):
+    def ask(self) -> dict | None:
         left = set(range(self.N)) - self.failed - self.stoped
+        if not left:
+            return None
         index = random.choice(list(left))
 
         fidelity = self.fidelities[index] + 1
@@ -101,7 +103,7 @@ class RandomOptimizer(Optimizer):
     def _tell(self, report: dict):
         self.tell_count += 1
 
-        index = report["config_id"]
+        index = report["config-id"]
         fidelity = report["fidelity"]
         cost = report["cost"]
         score = report["score"]

@@ -1,7 +1,7 @@
 # Quick-Tune-Tool
 
 [![image](https://img.shields.io/pypi/l/quicktunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
-[![image](https://img.shields.io/pypi/pyversions/quikctunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
+[![image](https://img.shields.io/pypi/pyversions/quicktunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -31,7 +31,7 @@ from qtt.finetune.image.classification import fn
 task_info, metafeat = extract_task_info_metafeat("path/to/dataset")
 
 # Initialize the optimizer
-optimizer = get_pretrained_optimizer("mtlbm/micro")
+optimizer = get_pretrained_optimizer("mtlbm/full")
 optimizer.setup(128, metafeat)
 
 # Create QuickTuner instance and run

@@ -2,8 +2,15 @@ import logging
 from typing import Optional
 
 
-def verbosity2loglevel(verbosity):
-    """Translates verbosity to logging level. Suppresses warnings if verbosity = 0."""
+def verbosity2loglevel(verbosity: int):
+    """Translates verbosity to logging level. Suppresses warnings if verbosity = 0.
+
+    Args:
+        verbosity (int): Verbosity level
+
+    Returns:
+        int: Logging level
+    """
     if verbosity <= 0:  # only errors
         # print("Caution: all warnings suppressed")
         log_level = 40
@@ -19,6 +26,13 @@ def verbosity2loglevel(verbosity):
 
 
 def set_logger_verbosity(verbosity: int, logger=None):
+    """
+    Set the verbosity of the logger. If no logger is provided, the root logger is used.
+
+    Args:
+        verbosity (int): Verbosity level
+        logger (logging.Logger, optional): Logger to set verbosity for. Defaults to None.
+    """
     if logger is None:
         logger = logging.root
     if verbosity < 0:
@@ -35,15 +49,14 @@ def add_log_to_file(
     datefmt: Optional[str] = None,
 ):
     """
-    Add a FileHandler to the logger so that it can log to a file
+    Add a FileHandler to the logger to log to a file in addition to the console.
+    If no format is provided, the format is set to: asctime - name: levelname message
 
-    Parameters
-    ----------
-    file_path: str
-        File path to save the log
-    logger: Optional[logging.Logger], default = None
-        The log to add FileHandler.
-        If not provided, will add to the default AG logger, `logging.getLogger('autogluon')`
+    Args:
+        file_path (str): Path to the log file
+        logger (logging.Logger, optional): Logger to add the file handler to. Defaults to None.
+        fmt (str, optional): Format string. Defaults to None.
+        datefmt (str, optional): Date format string. Defaults to None.
     """
     if logger is None:
         logger = logging.root
@@ -56,26 +69,23 @@ def add_log_to_file(
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-# def _add_stream_handler():
-#     if not any(isinstance(h, logging.StreamHandler) for h in _logger_.handlers):
-#         stream_handler = logging.StreamHandler()
-#         formatter = logging.Formatter("%(message)s")
-#         stream_handler.setFormatter(formatter)
-#         _logger_.addHandler(stream_handler)
-#         _logger_.propagate = False
 
 def setup_default_logging(
     default_level=logging.INFO,
     fmt: Optional[str] = None,
     datefmt: Optional[str] = None,
 ):
+    """Set up the default logging level and formatter for the root logger.
+    If no format is provided, only the message is printed.
+
+    Args:
+        default_level (int, optional): Default logging level. Defaults to logging.INFO.
+        fmt (str, optional): Format string. Defaults to None.
+        datefmt (str, optional): Date format string. Defaults to None.
+    """
     if fmt is None:
-        fmt = "%(asctime)s - %(name)s: [%(levelname)s] %(message)s"
+        fmt = "%(message)s"
+        # fmt = "%(asctime)s - %(name)s: [%(levelname)s] %(message)s"
     if datefmt is None:
         datefmt = "%y.%m.%d %H:%M:%S"
     logging.basicConfig(format=fmt, datefmt=datefmt, level=default_level)
-    # formatter = logging.Formatter(fmt, datefmt)
-    # sh = logging.StreamHandler()
-    # sh.setFormatter(formatter)
-    # logging.root.addHandler(sh)
-    # logging.root.setLevel(default_level)

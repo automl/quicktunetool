@@ -118,10 +118,10 @@ class QuickOptimizer(Optimizer):
         self.init_count = 0
         self.eval_count = 0
         self.configs: list[dict] = []
-        self.evaled = set()
-        self.stoped = set()
-        self.failed = set()
-        self.history = []
+        self.evaled: set[int] = set()
+        self.stoped: set[int] = set()
+        self.failed: set[int] = set()
+        self.history: list = []
 
         # placeholders
         self.pipelines: pd.DataFrame
@@ -149,8 +149,8 @@ class QuickOptimizer(Optimizer):
             metafeat (Mapping[str, int | float], optional): The metafeatures of the dataset.
         """
         self.N = n
-        self.fidelities: np.ndarray = np.zeros(n, dtype=int)
-        self.curves: np.ndarray = np.full((n, self.max_fidelity), np.nan, dtype=float)
+        self.fidelities = np.zeros(n, dtype=int)
+        self.curves = np.full((n, self.max_fidelity), np.nan, dtype=float)
         self.costs = None
         if self.patience is not None:
             self.score_history = np.zeros((n, self.patience), dtype=float)
@@ -161,8 +161,8 @@ class QuickOptimizer(Optimizer):
         self.configs = [dict(c) for c in _configs]
         self.pipelines = pd.DataFrame(self.configs)
 
-        self.metafeat = metafeat
-        if self.metafeat is not None:
+        self.metafeat = None
+        if metafeat is not None:
             self.metafeat = pd.DataFrame([metafeat] * self.N)
         self.pipelines = pd.concat([self.pipelines, self.metafeat], axis=1)
 
@@ -184,14 +184,14 @@ class QuickOptimizer(Optimizer):
         """
         self.pipelines = df
         self.N = len(df)
-        self.fidelities: np.ndarray = np.zeros(self.N, dtype=int)
-        self.curves: np.ndarray = np.full((self.N, self.max_fidelity), np.nan, dtype=float)
+        self.fidelities = np.zeros(self.N, dtype=int)
+        self.curves = np.full((self.N, self.max_fidelity), np.nan, dtype=float)
         self.costs = None
         if self.patience is not None:
             self.score_history = np.zeros((self.N, self.patience), dtype=float)
 
-        self.metafeat = metafeat
-        if self.metafeat is not None:
+        self.metafeat = None
+        if metafeat is not None:
             self.metafeat = pd.DataFrame([metafeat] * self.N)
         self.pipelines = pd.concat([self.pipelines, self.metafeat], axis=1)
         self.configs = self.pipelines.to_dict(orient="records")
@@ -206,16 +206,22 @@ class QuickOptimizer(Optimizer):
         """
         pipeline, curve = self.pipelines, self.curves
 
-        pred = self.perf_predictor.predict(pipeline, curve)  # type: ignore
+        if self.perf_predictor is None:
+            raise AssertionError("PerfPredictor is not fitted yet")
+        pred = self.perf_predictor.predict(X=pipeline, curve=curve)
         pred_mean, pred_std = pred
 
-        costs = self.costs
-        if self.cost_aware and self.costs is None:
-            costs = self.cost_predictor.predict(pipeline)  # type: ignore
-            costs = np.clip(costs, 1e-6, None)  # avoid division by zero
-            costs /= costs.max()  # normalize
-            costs = np.power(costs, self.cost_factor)  # rescale
-            self.costs = costs
+        costs = None
+        if self.cost_aware:
+            if self.cost_predictor is None:
+                raise AssertionError("CostPredictor is not fitted yet")
+            if self.costs is None:
+                c = self.cost_predictor.predict(X=pipeline)
+                c = np.clip(c, 1e-6, None)  # avoid division by zero
+                c /= c.max()  # normalize
+                c = np.power(c, self.cost_factor)  # rescale
+                self.costs = c
+            costs = self.costs
 
         return pred_mean, pred_std, costs
 

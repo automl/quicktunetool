@@ -3,11 +3,13 @@ import logging
 import os
 import random
 import shutil
+from typing import Tuple
 
-import gpytorch
+import gpytorch  # type: ignore
 import numpy as np
 import pandas as pd
 import torch
+from numpy.typing import ArrayLike
 from torch.utils.data import DataLoader, random_split
 
 from qtt.predictors.models import FeatureEncoder
@@ -252,6 +254,9 @@ class PerfPredictor(Predictor):
             np.random.seed(self.seed)
             torch.manual_seed(self.seed)
 
+        if self.model is None:
+            raise ValueError("Model must be set before training")
+
         self.device = get_torch_device()
         dev = self.device
         self.model.to(dev)
@@ -381,15 +386,10 @@ class PerfPredictor(Predictor):
         a, b, c = a.to(dev), b.to(dev), c.to(dev)
         self.model.set_train_data(a, b, c)
 
-    def _fit(
-        self,
-        X: pd.DataFrame,
-        y: np.ndarray,
-        verbosity: int = 2,
-        **kwargs,
-    ):
+    def _fit(self, X: pd.DataFrame, y: ArrayLike, **kwargs):
         if self.is_fit:
             raise AssertionError("Predictor is already fit! Create a new one.")
+        y = np.array(y)
 
         self._validate_fit_data(X, y)
         x = self._preprocess_fit_data(X)
@@ -614,13 +614,29 @@ class PerfPredictor(Predictor):
         a, b, c = batch
         self.model.set_train_data(a, b, c)
 
-    def predict(self, X: pd.DataFrame, curve: np.ndarray, fill_missing=True):
+    def _predict(self, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """
         Predict the performance of a configuration `X` on a new dataset `curve`.
-        """
 
-        if not self.is_fit:
+        Args:
+            X: the configuration to predict.
+            curve: the dataset to predict on.
+            fill_missing: whether to fill missing values in the dataset.
+
+        Returns:
+            The mean and standard deviation of the predicted performance.
+        """
+        if not self.is_fit or self.model is None:
             raise AssertionError("Model is not fitted yet")
+
+        X: pd.DataFrame = kwargs.pop("X", None)
+        curve: np.ndarray = kwargs.pop("curve", None)
+        fill_missing: bool = kwargs.pop("fill_missing", False)
+
+        if X is None:
+            raise ValueError("X (pipeline configuration) is a required argument for this predictor")
+        if curve is None:
+            raise ValueError("curve is a required argument for this predictor")
 
         self._validate_predict_data(X, curve)
         x = self._preprocess_predict_data(X, fill_missing)

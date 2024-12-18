@@ -61,15 +61,15 @@ def config_to_vector(configs: list[CS.Configuration], one_hot):
     """
     encoded_configs = []
     for config in configs:
-        config = dict(config)
+        config_dict = dict(config)
         enc_config = {}
         for hp in one_hot:
             # categorical hyperparameters
             if len(hp.split("=")) > 1:
                 key, choice = hp.split("=")
-                val = 1 if config.get(key) == choice else 0
+                val = 1 if config_dict.get(key) == choice else 0
             else:
-                val = config.get(hp, 0)  # NUM
+                val = config_dict.get(hp, 0)  # NUM
                 if isinstance(val, bool):  # BOOL
                     val = int(val)
             enc_config[hp] = val

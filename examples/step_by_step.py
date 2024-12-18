@@ -1,42 +1,20 @@
 from qtt import QuickOptimizer, QuickTuner
-from qtt.predictors import PerfPredictor, CostPredictor
-from qtt.finetune.cv.classification import finetune_script, extract_task_info_metafeat
+from qtt.finetune.image.classification import extract_image_dataset_metafeat, fn
 import pandas as pd
 from ConfigSpace import ConfigurationSpace
 
-config = pd.read_csv("config.csv", index_col=0)  # pipeline configurations
-meta = pd.read_csv("meta.csv", index_col=0)  # if meta-features are available
-curve = pd.read_csv("curve.csv", index_col=0)  # learning curves
-cost = pd.read_csv("cost.csv", index_col=0)  # runtime costs
+pipeline = pd.read_csv("pipeline.csv", index_col=0)
+curve = pd.read_csv("curve.csv", index_col=0)
+cost = pd.read_csv("cost.csv", index_col=0)
+meta = pd.read_csv("meta.csv", index_col=0)
+cs = ConfigurationSpace.from_yaml("space.yaml")
 
-X = pd.concat([config, meta], axis=1)
-curve = curve.values  # predictors expect curves as numpy arrays
-cost = cost.values  # predictors expect costs as numpy arrays
+config = pd.merge(pipeline, meta, on="dataset")
+config.drop(("dataset"), axis=1, inplace=True)
+opt = QuickOptimizer(cs, 50, cost_aware=True)
 
-perf_predictor = PerfPredictor().fit(X, curve)
-cost_predictor = CostPredictor().fit(X, cost)
+ti, mf = extract_image_dataset_metafeat("path/to/dataset")
+opt.setup(128, mf)
 
-# Define/Load the search space
-cs = ConfigurationSpace()  # ConfigurationSpace.from_json("cs.json")
-
-# Define the optimizer
-optimizer = QuickOptimizer(
-    cs=cs,
-    max_fidelity=50,
-    perf_predictor=perf_predictor,
-    cost_predictor=cost_predictor,
-)
-
-task_info, metafeat = extract_task_info_metafeat("path/to/dataset")
-
-
-optimizer.setup(
-    512,
-    metafeat=metafeat,
-)
-# Define the tuner
-tuner = QuickTuner(
-    optimizer=optimizer,
-    f=finetune_script,
-)
-tuner.run(trial_info=task_info, fevals=100, time_budget=3600)
+qt = QuickTuner(opt, fn)
+qt.run(100, trial_info=ti)

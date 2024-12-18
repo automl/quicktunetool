@@ -102,17 +102,6 @@ def fn(trial: dict, trial_info: dict) -> dict:
         resume_path = os.path.join(output_dir, str(config_id), "last.pth.tar")
         args += ["--resume", resume_path]
 
-    start = time.time()
-    process = subprocess.Popen(args)
-    try:
-        process.wait()
-    except KeyboardInterrupt:
-        process.terminate()
-    finally:
-        if process.poll() is None:
-            process.terminate()
-    end = time.time()
-
     report: dict = {}
     if process.returncode == 0:
         output_path = os.path.join(output_dir, str(config_id))

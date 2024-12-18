@@ -3,4 +3,3 @@
 from qtt import QuickImageCLSTuner
 
 tuner = QuickImageCLSTuner("path/to/dataset")
-tuner.run(fevals=100, time_budget=3600)

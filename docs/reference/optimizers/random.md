@@ -1,1 +1,1 @@
-::: qtt.optimizers.random
+::: qtt.optimizers.rndm

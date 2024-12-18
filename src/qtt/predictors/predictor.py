@@ -1,7 +1,9 @@
 import logging
 import os
 import pickle
+from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from numpy.typing import ArrayLike
 
@@ -63,7 +65,7 @@ class Predictor:
         """Returns True if the model has been fit."""
         return self.model is not None
 
-    def fit(self, X: pd.DataFrame, y: ArrayLike, verbosity: int = 2, **kwargs):
+    def fit(self, X: pd.DataFrame, y: ArrayLike, **kwargs):
         """
         Fit model to predict values in y based on X.
 
@@ -74,23 +76,15 @@ class Predictor:
                 The training data features.
             y (ArrayLike):
                 The training data ground truth labels.
-            verbosity (int), default = 2:
-                Verbosity levels range from 0 to 4 and control how much information is printed.
-                Higher levels correspond to more detailed print statements (you can set verbosity = 0 to suppress warnings).
-                verbosity 4: logs every training iteration, and logs the most detailed information.
-                verbosity 3: logs training iterations periodically, and logs more detailed information.
-                verbosity 2: logs only important information.
-                verbosity 1: logs only warnings and exceptions.
-                verbosity 0: logs only exceptions.
             **kwargs :
                 Any additional fit arguments a model supports.
         """
-        out = self._fit(X=X, y=y, verbosity=verbosity, **kwargs)
+        out = self._fit(X=X, y=y, **kwargs)
         if out is None:
             out = self
         return out
 
-    def _fit(self, **kwargs):
+    def _fit(self, X: pd.DataFrame, y: ArrayLike, **kwargs):
         """
         Fit model to predict values in y based on X.
 
@@ -178,7 +172,16 @@ class Predictor:
             logger.info(f"Model saved to: {file_path}")
         return path
 
-    def predict(self, **kwargs):
+    def predict(self, **kwargs) -> np.ndarray | Tuple[np.ndarray, ...]:
+        """
+        Predicts the output for the given input data.
+
+        Models should not override the `predict` method, but instead override the `_predict` method
+        which has the same arguments.
+        """
+        return self._predict(**kwargs)
+
+    def _predict(self, **kwargs):
         """
         Predicts the output for the given input data.
 

@@ -55,7 +55,7 @@ class Optimizer:
         It allows to perform some post-processing steps after each tell."""
         pass
 
-    def ask(self) -> dict:
+    def ask(self) -> dict | None:
         """Ask the optimizer for a trial to evaluate.
 
         Returns:
@@ -120,17 +120,8 @@ class Optimizer:
             path = self.path
         os.makedirs(path, exist_ok=True)
         file_path = os.path.join(path, self.model_file_name)
-        # tmp = {}
-        # for key, obj in vars(self).items():
-        #     if hasattr(obj, "save"):
-        #         obj_path = os.path.join(path, key)
-        #         obj.save(obj_path)
-        #         tmp[key] = obj
-        #         setattr(self, key, None)
         with open(file_path, "wb") as f:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
-        # for key, obj in tmp.items():
-        #     setattr(self, key, obj)
         if verbose:
             logger.info(f"Model saved to: {file_path}")
         return path

@@ -1,6 +1,6 @@
-"""A quick example of using QuickCVCLSTuner to tune vision classifiers on a dataset."""
+"""A quick example of using a special QuickTuner to tune image classifiers on a new dataset."""
 
-from qtt import QuickTuner_ImageCLS
+from qtt import QuickImageCLSTuner
 
-tuner = QuickTuner_ImageCLS("path/to/dataset")
+tuner = QuickImageCLSTuner("path/to/dataset")
 tuner.run(fevals=100, time_budget=3600)

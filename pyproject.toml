@@ -39,9 +39,5 @@ dependencies = [
 "Bug Reports" = "https://github.com/automl/quicktunetool/issues"
 "Source" = "https://github.com/automl/quicktunetool"
 
-[project.scripts]
-train = "qtt.finetune.cv.classification.train:main_cli"
-validate = "qtt.finetune.cv.classification.validate:main_cli"
-
 [tool.setuptools.packages.find]
 where = ["src"]

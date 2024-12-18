@@ -4,10 +4,10 @@ import logging
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer  # type: ignore
+from sklearn.impute import SimpleImputer  # type: ignore
+from sklearn.pipeline import Pipeline  # type: ignore
+from sklearn.preprocessing import OneHotEncoder, StandardScaler  # type: ignore
 from torch.utils.data import Dataset
 
 logger = logging.getLogger(__name__)
@@ -58,9 +58,7 @@ def get_types_of_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, list]:
     """
     unique_features = [col for col in df.columns if df[col].nunique() == 1]
     if unique_features:
-        logger.info(
-            f"Features {unique_features} have only one unique value and are dropped"
-        )
+        logger.info(f"Features {unique_features} have only one unique value and are dropped")
         df.drop(columns=unique_features, inplace=True)
 
     nan_features = df.columns[df.isna().all()].tolist()
@@ -78,7 +76,7 @@ def get_types_of_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict, list]:
         logger.info(f"Features {unknown_features} have unknown dtypes and are dropped")
         df = df.drop(columns=unknown_features)
 
-    types_of_features = {"continuous": [], "categorical": [], "bool": []}
+    types_of_features: dict = {"continuous": [], "categorical": [], "bool": []}
     for col in df.columns:
         if col in continous_features:
             types_of_features["continuous"].append(col)
@@ -109,9 +107,7 @@ def get_feature_mapping(processor):
                         f"same feature is processed by two different column transformers: {feature}"
                     )
                 encoding_size = len(encoder.categories_[i])
-                feature_mapping[feature] = list(
-                    range(col_index, col_index + encoding_size)
-                )
+                feature_mapping[feature] = list(range(col_index, col_index + encoding_size))
                 col_index += encoding_size
         else:
             raise ValueError(f"Unknown transformer {tf_name}")

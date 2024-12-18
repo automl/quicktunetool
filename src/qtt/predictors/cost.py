@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from sklearn import preprocessing
+from numpy.typing import ArrayLike
+from sklearn import preprocessing  # type: ignore
 from torch.utils.data import DataLoader, random_split
 
 from ..utils.log_utils import set_logger_verbosity
-from .predictor import Predictor
 from .data import (
     SimpleTorchTabularDataset,
     create_preprocessor,
@@ -18,6 +18,7 @@ from .data import (
     get_types_of_features,
 )
 from .models import MLP
+from .predictor import Predictor
 from .utils import MetricLogger, get_torch_device
 
 logger = logging.getLogger(__name__)
@@ -282,12 +283,13 @@ class CostPredictor(Predictor):
     def _fit(
         self,
         X: pd.DataFrame,
-        y: np.ndarray,
-        verbosity: int = 2,
+        y: ArrayLike,
         **kwargs,
     ):
         if self.is_fit:
             raise AssertionError("Predictor is already fit! Create a new one.")
+
+        y = np.array(y)
 
         self._validate_fit_data(X, y)
         _X, _y = self._preprocess_fit_data(X, y)
@@ -300,19 +302,25 @@ class CostPredictor(Predictor):
 
         return self
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
-        if not self.is_fit:
+    def _predict(self, **kwargs) -> np.ndarray:
+        """Predict the costs of training a configuration on a new dataset.
+
+        Args:
+            X (pd.DataFrame): the configuration to predict.
+        """
+        if not self.is_fit or self.model is None:
             raise AssertionError("Model is not fitted yet")
 
-        self._validate_predict_data(X)
+        X: pd.DataFrame = kwargs.pop("X", None)
+        if X is None:
+            raise ValueError("X (pipeline configuration) must be provided")
 
+        self._validate_predict_data(X)
         x = self._preprocess_predict_data(X)
 
-        device = self.device
-
         self.model.eval()
-        self.model.to(device)
-        x_t = torch.tensor(x, dtype=torch.float32).to(device)
+        self.model.to(self.device)
+        x_t = torch.tensor(x, dtype=torch.float32).to(self.device)
 
         with torch.no_grad():
             pred = self.model.predict(x_t)
@@ -389,9 +397,9 @@ class SimpleMLPRegressor(torch.nn.Module):
             output = self.config_encoder[i](X[:, start:end])
             x.append(output)
             start = end
-        x = torch.cat(x, dim=1)
-        x = self.head(x)
-        return x
+        t = torch.cat(x, dim=1)
+        t = self.head(t)
+        return t
 
     def predict(self, X) -> torch.Tensor:
         return self(X)

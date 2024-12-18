@@ -9,7 +9,7 @@ import torch
 logger = logging.getLogger(__name__)
 
 
-def setup_outputdir(path, create_dir=True, warn_if_exist=True, path_suffix=None):
+def setup_outputdir(path, create_dir=True, warn_if_exist=True, path_suffix=None) -> str:
     if path is not None:
         assert isinstance(
             path, str

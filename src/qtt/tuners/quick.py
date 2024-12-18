@@ -133,6 +133,8 @@ class QuickTuner:
             history_df.to_csv(history_path)
         except Exception as e:
             logger.warning(f"History not saved: {e!r}")
+        finally:
+            logger.info("Saved history.")
 
     def _log_job_submission(self, trial_info: dict):
         fidelity = trial_info["fidelity"]
@@ -162,6 +164,8 @@ class QuickTuner:
                 pickle.dump(state, f, protocol=pickle.HIGHEST_PROTOCOL)
         except Exception as e:
             logger.warning(f"State not saved: {e!r}")
+        finally:
+            logger.info("State saved to disk.")
         try:
             opt_path = os.path.join(self.output_dir, "optimizer")
             self.optimizer.save(opt_path)
@@ -250,12 +254,13 @@ class QuickTuner:
             fidelity = report["fidelity"]
             config = config_to_serializible_dict(report["config"])
 
-            logger.info(
-                f"*** CONFIG: {config_id}"
-                f" - SCORE: {score:.3f}"
-                f" - FIDELITY: {fidelity}"
-                f" - TIME-TAKEN {cost:.3f} ***"
-            )
+            separator = "-" * 60
+            logger.info(separator)
+            logger.info(f"CONFIG ID : {config_id}")
+            logger.info(f"FIDELITY  : {fidelity}")
+            logger.info(f"SCORE     : {score:.3f}")
+            logger.info(f"TIME      : {cost:.3f}")
+            logger.info(separator)
 
             if self.inc_score < score:
                 self.inc_score = score
@@ -277,11 +282,15 @@ class QuickTuner:
             self.save()
 
     def _log_end(self):
-        logger.info("Run complete!")
-        logger.info(f"Best score: {self.inc_score}")
-        logger.info(f"Best cost: {self.inc_cost}")
-        logger.info(f"Best config ID: {self.inc_id}")
-        logger.info(f"Best configuration: {self.inc_config}")
+        separator = "=" * 60
+        logger.info(separator)
+        logger.info("RUN COMPLETE - SUMMARY REPORT")
+        logger.info(separator)
+        logger.info(f"Best Score        : {self.inc_score:.3f}")
+        logger.info(f"Best Cost         : {self.inc_cost:.3f} seconds")
+        logger.info(f"Best Config ID    : {self.inc_id}")
+        logger.info(f"Best Configuration: {self.inc_config}")
+        logger.info(separator)
 
     def _validate_kwargs(self, kwargs: dict) -> None:
         for key, value in kwargs.items():

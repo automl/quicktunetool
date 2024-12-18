@@ -1,6 +1,6 @@
 from .optimizer import Optimizer
 from .quick import QuickOptimizer
-from .random import RandomOptimizer
+from .rndm import RandomOptimizer
 
 __all__ = [
     "Optimizer",

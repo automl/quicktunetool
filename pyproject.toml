@@ -31,8 +31,33 @@ dependencies = [
   "pyyaml >= 6.0.1",
   "scikit-learn == 1.5.0",
   "tqdm >= 4.66.0",
-  "fimm"
+  "fimm",
+  "commitizen"
 ]
+
+[project.optional-dependencies]
+dev = ["quicktunetool[docs, tooling]"]
+tooling = ["commitizen", "pre-commit", "ruff", "mypy", "types-psutil", "types-pyyaml"]
+docs = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocs-autorefs",
+  "mkdocs-awesome-pages-plugin",
+  "mkdocs-gen-files",
+  "mkdocs-literate-nav",
+  "mkdocs-glightbox",
+  "mkdocstrings[python]",
+  "markdown-exec[ansi]",
+  "matplotlib",
+  "more-itertools",
+  "rich",
+  "typing-extensions",
+  "mike",
+  "pillow",
+  "cairosvg",
+  "black",
+]
+
 
 [project.urls]
 "Homepage" = "https://github.com/automl/quicktunetool"
@@ -41,3 +66,10 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.4"
+update_changelog_on_bump = true
+version_files = ["pyproject.toml:version"]
+changelog_start_rev = "0.1.0"

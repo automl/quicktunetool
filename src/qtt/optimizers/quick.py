@@ -4,7 +4,7 @@ from typing import Literal, Mapping
 import numpy as np
 import pandas as pd
 from ConfigSpace import ConfigurationSpace
-from scipy.stats import norm
+from scipy.stats import norm  # type: ignore
 
 from ..predictors import CostPredictor, PerfPredictor
 from ..utils import fix_random_seeds, set_logger_verbosity

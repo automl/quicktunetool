@@ -1,7 +1,7 @@
 # Quick-Tune-Tool
 
 [![image](https://img.shields.io/pypi/l/quicktunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
-[![image](https://img.shields.io/pypi/pyversions/quikctunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
+[![image](https://img.shields.io/pypi/pyversions/quicktunetool.svg)](https://pypi.python.org/pypi/quicktunetool)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 

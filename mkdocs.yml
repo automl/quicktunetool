@@ -1,6 +1,6 @@
 site_name: Quick-Tune-Tool
-repo_url: https://github.com/automl/QTT
-repo_name: automl/QTT
+repo_url: https://github.com/automl/quicktunetool
+repo_name: automl/quicktunetool
 
 theme:
   name: material

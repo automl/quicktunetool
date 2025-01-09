@@ -69,7 +69,7 @@ where = ["src"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.4"
+version = "0.0.3"
 update_changelog_on_bump = true
 version_files = ["pyproject.toml:version"]
-changelog_start_rev = "0.1.0"
+changelog_start_rev = "0.0.0"

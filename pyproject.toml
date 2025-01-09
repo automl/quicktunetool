@@ -1,6 +1,6 @@
 [project]
 name = "quicktunetool"
-version = "0.0.3"
+version = "0.0.4"
 description = "A Framework for Efficient Model Selection and Hyperparameter Optimization"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -69,6 +69,6 @@ where = ["src"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.3"
+version = "0.0.4"
 update_changelog_on_bump = true
 version_files = ["pyproject.toml:version"]

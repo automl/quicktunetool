@@ -88,6 +88,13 @@ class QuickTuner:
             self.load(os.path.join(self.output_dir, "qt.json"))
 
     def _setup_log_to_file(self, log_to_file: bool, log_file_path: str) -> None:
+        """
+        Set up the logging to file.
+
+        Args:
+            log_to_file (bool): Whether to log to file.
+            log_file_path (str | Path): Path to the log file.
+        """
         if not log_to_file:
             return
         if log_file_path == "auto":
@@ -96,8 +103,20 @@ class QuickTuner:
         os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
         add_log_to_file(log_file_path, logger)
 
-    def _is_budget_exhausted(self, fevals=None, time_budget=None):
-        """Checks if the run should be terminated or continued."""
+    def _is_budget_exhausted(
+        self, fevals: int | None = None, time_budget: float | None = None
+    ) -> bool:
+        """
+        Checks if the run budget has been exhausted. Returns whether the run should be terminated.
+        Negative values translate to no budget. If no limit is desired, use None.
+
+        Args:
+            fevals (int, optional): Number of function evaluations. Defaults to None.
+            time_budget (float, optional): Time budget in seconds. Defaults to None.
+
+        Returns:
+            bool: Whether the run should be terminated or continued.
+        """
         if fevals is not None:
             evals_left = fevals - len(self.traj)
             if evals_left <= 0:
@@ -111,6 +130,12 @@ class QuickTuner:
         return False
 
     def _save_incumbent(self, save: bool = True):
+        """
+        Saves the current incumbent configuration and its associated information to a JSON file.
+
+        Args:
+            save (bool, optional): Whether to save the incumbent. Defaults to True.
+        """
         if not self.inc_config or not save:
             return
         try:
@@ -125,6 +150,12 @@ class QuickTuner:
             logger.error(f"Failed to save incumbent: {e}")
 
     def _save_history(self, save: bool = True):
+        """
+        Saves the history of evaluations to a CSV file.
+
+        Args:
+            save (bool, optional): Whether to save the history. Defaults to True.
+        """
         if not self.history or not save:
             return
         try:
@@ -137,6 +168,12 @@ class QuickTuner:
             logger.info("Saved history.")
 
     def _log_job_submission(self, trial_info: dict):
+        """
+        Logs a message when a job is submitted to the compute backend.
+
+        Args:
+            trial_info (dict): A dictionary containing the trial information.
+        """
         fidelity = trial_info["fidelity"]
         config_id = trial_info["config-id"]
         logger.info(
@@ -147,12 +184,28 @@ class QuickTuner:
         logger.info(f"Evaluating configuration {config_id} with fidelity {fidelity}")
 
     def _get_state(self):
+        """
+        Returns the state of the QuickTuner as a dictionary.
+
+        Returns:
+            A dictionary containing the state of the QuickTuner.
+        """
         state = self.__dict__.copy()
         state.pop("optimizer")
         state.pop("f")
         return state
 
     def _save_state(self, save: bool = True):
+        """
+        Saves the state of the QuickTuner to disk.
+
+        The state of the Tuner is saved as a JSON file to disk, named 'qt.json' in the output
+        directory. If the optimization is interrupted, the state can be loaded from disk to
+        resume the optimization.
+
+        Args:
+            save (bool, optional): Whether to save the state. Defaults to True.
+        """
         if not save:
             return
         # Get state

@@ -3,7 +3,7 @@
 This examples shows how to define a search space. We use
 [ConfigSpace](https://github.com/automl/ConfigSpace).
 
-This search space is defined for a iamge classification task and includes
+This search space is defined for a image classification task and includes
 various hyperparameters that can be optimized.
 
 First import the necessary modules:

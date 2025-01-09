@@ -1,6 +1,6 @@
 [project]
 name = "quicktunetool"
-version = "0.0.1"
+version = "0.0.3"
 description = "A Framework for Efficient Model Selection and Hyperparameter Optimization"
 readme = "README.md"
 requires-python = ">=3.11"
